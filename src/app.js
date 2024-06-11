@@ -1,6 +1,7 @@
-import express from "express";
-import productsRouter from "./routes/products.js";
-import cartsRouter from "./routes/carts.js";
+import express from "express"
+import displayRoutes from "express-routemap"
+import productsRouter from "./routes/products.routes.js"
+import cartRouter from "./routes/cart.routes.js"
 
 const app = express();
 const PUERTO = 8080;
@@ -9,12 +10,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-    res.send("Carniceria Aviar");
+    res.send("Bienvenido a Delicias Aladas");
 })
 
-app.use("/apis/products", productsRouter);
-app.use("/apis/carts", cartsRouter);
+app.use("/api/products", productsRouter)
+app.use("/api/carts", cartRouter)
 
 app.listen(PUERTO, () => {
-    console.log(`El servidor está escuchando en el puerto ${PUERTO}`);
-});
+    displayRoutes(app)
+})

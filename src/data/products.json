@@ -1,0 +1,98 @@
+[
+  {
+    "title": "Pollo Entero",
+    "description": "Pollo fresco, ideal para asados y guisos",
+    "price": "2000",
+    "img": "Sin Imagen",
+    "code": "p001",
+    "stock": "100",
+    "category": "Carne de Aves",
+    "status": true,
+    "thumbnails": [],
+    "id": 1
+  },
+  {
+    "title": "Pechuga de Pollo",
+    "description": "Pechuga de pollo deshuesada y sin piel",
+    "price": "3000",
+    "img": "Sin Imagen",
+    "code": "p002",
+    "stock": "150",
+    "category": "Carne de Aves",
+    "status": true,
+    "thumbnails": [],
+    "id": 2
+  },
+  {
+    "title": "Muslos de Pollo",
+    "description": "Muslos de pollo frescos",
+    "price": "2500",
+    "img": "Sin Imagen",
+    "code": "p003",
+    "stock": "200",
+    "category": "Carne de Aves",
+    "status": true,
+    "thumbnails": [],
+    "id": 3
+  },
+  {
+    "title": "Alitas de Pollo",
+    "description": "Alitas de pollo perfectas para hornear o freír",
+    "price": "2200",
+    "img": "Sin Imagen",
+    "code": "p004",
+    "stock": "120",
+    "category": "Carne de Aves",
+    "status": true,
+    "thumbnails": [],
+    "id": 4
+  },
+  {
+    "title": "Hígado de Pollo",
+    "description": "Hígado de pollo fresco, ideal para paté",
+    "price": "1800",
+    "img": "Sin Imagen",
+    "code": "p005",
+    "stock": "80",
+    "category": "Carne de Aves",
+    "status": true,
+    "thumbnails": [],
+    "id": 5
+  },
+  {
+    "title": "Mollejas de Pollo",
+    "description": "Mollejas de pollo limpias y frescas",
+    "price": "2000",
+    "img": "Sin Imagen",
+    "code": "p006",
+    "stock": "90",
+    "category": "Carne de Aves",
+    "status": true,
+    "thumbnails": [],
+    "id": 6
+  },
+  {
+    "title": "Filete de Pollo",
+    "description": "Filetes de pollo tiernos y jugosos",
+    "price": "3200",
+    "img": "Sin Imagen",
+    "code": "p007",
+    "stock": "110",
+    "category": "Carne de Aves",
+    "status": true,
+    "thumbnails": [],
+    "id": 7
+  },
+  {
+    "title": "Patas de Pollo",
+    "description": "Patas de pollo frescas, ideales para caldos",
+    "price": "1500",
+    "img": "Sin Imagen",
+    "code": "p008",
+    "stock": "130",
+    "category": "Carne de Aves",
+    "status": true,
+    "thumbnails": [],
+    "id": 8
+  }
+]

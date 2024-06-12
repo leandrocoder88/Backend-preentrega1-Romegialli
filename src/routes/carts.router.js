@@ -3,7 +3,7 @@ import CartManager from "../managers/cart-manager.js";
 import ProductManager from "../managers/product-manager.js";
 
 const router = Router();
-const cartManager = new CartManager("./src/data/carts.json");
+const cartManager = new CartManager("./src/data/cart.json");
 const productManager = new ProductManager("./src/data/products.json");
 
 // Obtener todos los carritos

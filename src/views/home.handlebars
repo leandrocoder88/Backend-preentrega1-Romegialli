@@ -1,0 +1,21 @@
+{{!< main}}
+
+<!-- Contenido de la página Home -->
+<div class="container mt-4">
+  <h1 class="mb-4">Productos Disponibles</h1>
+  <div class="row">
+    {{#each products}}
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">{{title}}</h5>
+            <p class="card-text">Descripción: {{description}}</p>
+            <p class="card-text">Precio: {{price}}</p>
+            <p class="card-text">Categoría: {{category}}</p>
+            <p class="card-text">Stock: {{stock}}</p>
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>

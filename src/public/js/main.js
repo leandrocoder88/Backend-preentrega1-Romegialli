@@ -24,7 +24,7 @@ document.getElementById('btnEnviar').addEventListener('click', () => {
     socket.emit('addProduct', newProduct);
 });
 
-// Listen for the updated product list
+
 socket.on('products', products => {
     const contenedorProductos = document.getElementById('contenedorProductos');
     contenedorProductos.innerHTML = '';
@@ -42,7 +42,7 @@ socket.on('products', products => {
         contenedorProductos.appendChild(productElement);
     });
 
-    // Add event listeners for the delete buttons
+
     document.querySelectorAll('.delete-button').forEach(button => {
         button.addEventListener('click', () => {
             const productId = button.getAttribute('data-id');

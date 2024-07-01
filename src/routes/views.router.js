@@ -12,8 +12,8 @@ router.get("/", async (req, res) => {
 });
 
 // Vista Real-Time Products
-router.get("/realTimeProducts", async (req, res) => {
-    res.render("realTimeProducts");
+router.get("/realtimeproducts", async (req, res) => {
+    res.render("realtimeproducts");
 });
 
 export default router;

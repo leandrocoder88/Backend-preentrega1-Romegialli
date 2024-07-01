@@ -85,13 +85,13 @@
   },
   {
     "id": 9,
-    "title": "faisán ",
-    "description": "carne exotica",
-    "price": "3000",
+    "title": "Faisán",
+    "description": "Carne exótica, digna de la realeza",
+    "price": "4500",
     "thumbnails": "Sin Imagen",
-    "code": "s3",
-    "stock": "233",
-    "category": "carne de aves",
+    "code": "c2",
+    "stock": "245",
+    "category": "Carne de Aves",
     "status": true
   }
 ]

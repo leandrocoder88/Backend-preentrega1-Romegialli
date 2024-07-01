@@ -30,7 +30,7 @@ class ProductManager {
         const requiredFields = ["title", "description", "price", "img", "code", "stock", "category", "status"];
         const missingFields = requiredFields.filter(field => !newProduct[field]);
 
-        if (missingFields.length > 0) {
+        if (missingFields.length > 1) {
             throw new Error("Complete todos los campos");
         }
 
@@ -42,6 +42,8 @@ class ProductManager {
         const updatedProducts = [...products, { id, ...newProduct }];
 
         await this.writeJSONFile(updatedProducts);
+
+        console.log("Producto creado:", { id, ...newProduct });
         return id;
     }
 
@@ -50,10 +52,13 @@ class ProductManager {
         const updatedProducts = products.filter(product => product.id !== productId);
 
         if (updatedProducts.length === products.length) {
+            console.error("PRODUCTO NO ENCONTRADO:", productId);
             throw new Error("PRODUCTO NO ENCONTRADO");
         }
 
         await this.writeJSONFile(updatedProducts);
+
+        console.log("Producto eliminado:", productId);
     }
 
     async updateProduct(productId, updatedProduct) {
@@ -61,11 +66,14 @@ class ProductManager {
         const index = products.findIndex(product => product.id === productId);
 
         if (index === -1) {
+            console.error("PRODUCTO NO ENCONTRADO:", productId);
             throw new Error("PRODUCTO NO ENCONTRADO");
         }
 
         products[index] = { ...products[index], ...updatedProduct };
         await this.writeJSONFile(products);
+
+        console.log("Producto actualizado:", products[index]);
         return products[index];
     }
 }

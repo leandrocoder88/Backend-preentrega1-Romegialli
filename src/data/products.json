@@ -1,17 +1,5 @@
 [
   {
-    "title": "Pollo Entero",
-    "description": "Pollo fresco, ideal para asados y guisos",
-    "price": "2000",
-    "img": "Sin Imagen",
-    "code": "p001",
-    "stock": "100",
-    "category": "Carne de Aves",
-    "status": true,
-    "thumbnails": [],
-    "id": 1
-  },
-  {
     "title": "Pechuga de Pollo",
     "description": "Pechuga de pollo deshuesada y sin piel",
     "price": "3000",
@@ -94,5 +82,16 @@
     "status": true,
     "thumbnails": [],
     "id": 8
+  },
+  {
+    "id": 9,
+    "title": "faisán ",
+    "description": "carne exotica",
+    "price": "3000",
+    "thumbnails": "Sin Imagen",
+    "code": "s3",
+    "stock": "233",
+    "category": "carne de aves",
+    "status": true
   }
 ]

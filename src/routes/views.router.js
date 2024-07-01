@@ -1,9 +1,9 @@
 import { Router } from "express";
 import ProductManager from "../managers/product-manager.js";
-import path from "path";
+
 
 const router = Router();
-const productManager = new ProductManager(path.resolve("src/data/products.json"));
+const productManager = new ProductManager("src/data/products.json");
 
 // Vista Home
 router.get("/", async (req, res) => {
@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
 });
 
 // Vista Real-Time Products
-router.get("/realtimeproducts", async (req, res) => {
+router.get("/realTimeProducts", async (req, res) => {
     res.render("realTimeProducts");
 });
 

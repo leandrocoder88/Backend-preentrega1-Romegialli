@@ -1,0 +1,20 @@
+{{!-- Usar el diseño principal --}}
+{{!-- Archivo: src/views/carts.handlebars --}}
+{{#extends 'layout/main'}}
+{{#content 'body'}}
+    <h1 class="my-4">Productos en el carrito</h1>
+    <div class="row">
+        {{#each productos}}
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{this.product.title}}</h5>
+                        <p class="card-text">{{this.product.description}}</p>
+                        <p class="card-text">Precio: ${{this.product.price}}</p>
+                        <p class="card-text">Cantidad: {{this.quantity}}</p>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+{{/content}}

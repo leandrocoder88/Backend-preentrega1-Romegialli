@@ -8,8 +8,7 @@
     "stock": "150",
     "category": "Carne de Aves",
     "status": true,
-    "thumbnails": [],
-    "id": 2
+    "thumbnails": []
   },
   {
     "title": "Muslos de Pollo",
@@ -20,8 +19,7 @@
     "stock": "200",
     "category": "Carne de Aves",
     "status": true,
-    "thumbnails": [],
-    "id": 3
+    "thumbnails": []
   },
   {
     "title": "Alitas de Pollo",
@@ -32,8 +30,7 @@
     "stock": "120",
     "category": "Carne de Aves",
     "status": true,
-    "thumbnails": [],
-    "id": 4
+    "thumbnails": []
   },
   {
     "title": "Hígado de Pollo",
@@ -44,8 +41,7 @@
     "stock": "80",
     "category": "Carne de Aves",
     "status": true,
-    "thumbnails": [],
-    "id": 5
+    "thumbnails": []
   },
   {
     "title": "Mollejas de Pollo",
@@ -56,8 +52,7 @@
     "stock": "90",
     "category": "Carne de Aves",
     "status": true,
-    "thumbnails": [],
-    "id": 6
+    "thumbnails": []
   },
   {
     "title": "Filete de Pollo",
@@ -68,8 +63,7 @@
     "stock": "110",
     "category": "Carne de Aves",
     "status": true,
-    "thumbnails": [],
-    "id": 7
+    "thumbnails": []
   },
   {
     "title": "Patas de Pollo",
@@ -80,11 +74,9 @@
     "stock": "130",
     "category": "Carne de Aves",
     "status": true,
-    "thumbnails": [],
-    "id": 8
+    "thumbnails": []
   },
   {
-    "id": 9,
     "title": "Faisán",
     "description": "Carne exótica, digna de la realeza",
     "price": "4500",

@@ -1,25 +1,51 @@
 import { Router } from "express";
-import ProductManager from "../managers/product-manager.js";
+import ProductManagerDB from "../dao/db/product-manager-db.js";
 
 const router = Router();
-const productManager = new ProductManager("./src/data/products.json");
+const productManager = new ProductManagerDB();
 
 // Obtener todos los productos
 router.get("/", async (req, res) => {
-    const products = await productManager.getAllProducts();
-    const { limit } = req.query;
-    const productsToSend = limit ? products.slice(0, limit) : products;
-    res.json(productsToSend);
+    const { limit, page, sort, query } = req.query;
+
+    try {
+        const options = {
+            limit: limit ? parseInt(limit) : 10,
+            page: page ? parseInt(page) : 1,
+            sort: sort ? { price: sort === "asc" ? 1 : -1 } : {},
+        };
+
+        const filter = query ? { category: query } : {};
+
+        const result = await productManager.getProducts(filter, options);
+
+        const { docs, totalPages, page: currentPage, hasPrevPage, hasNextPage, prevPage, nextPage } = result;
+
+        res.json({
+            status: "success",
+            payload: docs,
+            totalPages,
+            prevPage,
+            nextPage,
+            page: currentPage,
+            hasPrevPage,
+            hasNextPage,
+            prevLink: hasPrevPage ? `/products?page=${prevPage}&limit=${limit}&sort=${sort}&query=${query}` : null,
+            nextLink: hasNextPage ? `/products?page=${nextPage}&limit=${limit}&sort=${sort}&query=${query}` : null,
+        });
+    } catch (error) {
+        res.status(500).json({ status: "error", message: error.message });
+    }
 });
 
 // Obtener un producto por su ID
 router.get("/:pid", async (req, res) => {
     const { pid } = req.params;
     try {
-        const product = await productManager.getProductById(parseInt(pid));
+        const product = await productManager.getProductById(pid);
         res.json(product);
     } catch (error) {
-        res.status(404).send("Producto no encontrado");
+        res.status(404).json({ status: "error", message: "Producto no encontrado" });
     }
 });
 
@@ -27,10 +53,10 @@ router.get("/:pid", async (req, res) => {
 router.post("/", async (req, res) => {
     const newProduct = req.body;
     try {
-        const id = await productManager.createProduct(newProduct);
-        res.status(201).json({ id });
+        const product = await productManager.createProduct(newProduct);
+        res.status(201).json({ status: "success", product });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(400).json({ status: "error", message: error.message });
     }
 });
 
@@ -38,10 +64,10 @@ router.post("/", async (req, res) => {
 router.delete("/:pid", async (req, res) => {
     const { pid } = req.params;
     try {
-        await productManager.deleteProduct(parseInt(pid));
-        res.send(`Producto con id ${pid} eliminado con éxito`);
+        await productManager.deleteProduct(pid);
+        res.json({ status: "success", message: `Producto con id ${pid} eliminado con éxito` });
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        res.status(404).json({ status: "error", message: error.message });
     }
 });
 
@@ -50,10 +76,10 @@ router.put("/:pid", async (req, res) => {
     const { pid } = req.params;
     const updatedProduct = req.body;
     try {
-        const product = await productManager.updateProduct(parseInt(pid), updatedProduct);
-        res.json({ message: "Producto actualizado con éxito", product });
+        const product = await productManager.updateProduct(pid, updatedProduct);
+        res.json({ status: "success", message: "Producto actualizado con éxito", product });
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        res.status(404).json({ status: "error", message: error.message });
     }
 });
 

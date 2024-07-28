@@ -1,16 +1,15 @@
 import { Router } from "express";
-import CartManager from "../managers/cart-manager.js";
-import ProductManager from "../managers/product-manager.js";
-import path from "path";
+import CartManagerDB from "../dao/db/cart-manager-db.js";
+import ProductManagerDB from "../dao/db/product-manager-db.js";
 
 const router = Router();
-const cartManager = new CartManager(path.resolve("src/data/cart.json"));
-const productManager = new ProductManager(path.resolve("src/data/products.json"));
+const cartManager = new CartManagerDB();
+const productManager = new ProductManagerDB();
 
 // Obtener todos los carritos
 router.get("/", async (req, res) => {
     try {
-        const carts = await cartManager.getAllCarts();
+        const carts = await cartManager.obtenerCarritos();
         const { limit } = req.query;
         if (limit) {
             res.json(carts.slice(0, limit));
@@ -24,8 +23,9 @@ router.get("/", async (req, res) => {
 
 // Obtener un carrito por ID
 router.get("/:cid", async (req, res) => {
+    const { cid } = req.params;
     try {
-        const cart = await cartManager.getCartById(parseInt(req.params.cid));
+        const cart = await cartManager.getCarritoById(cid);
         if (cart) {
             res.json(cart);
         } else {
@@ -39,8 +39,8 @@ router.get("/:cid", async (req, res) => {
 // Crear un nuevo carrito
 router.post("/", async (req, res) => {
     try {
-        const newCart = await cartManager.createCart();
-        res.status(201).json({ message: `Carrito ${newCart.id} creado correctamente`, cart: newCart });
+        const newCart = await cartManager.crearCarrito();
+        res.status(201).json({ message: `Carrito ${newCart._id} creado correctamente`, cart: newCart });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -48,16 +48,16 @@ router.post("/", async (req, res) => {
 
 // Añadir un producto a un carrito
 router.post("/:cid/product/:pid", async (req, res) => {
-    try {
-        const cartId = parseInt(req.params.cid);
-        const productId = parseInt(req.params.pid);
+    const { cid, pid } = req.params;
+    const { quantity } = req.body; // Asumiendo que se puede pasar la cantidad en el cuerpo de la solicitud
 
-        const product = await productManager.getProductById(productId);
+    try {
+        const product = await productManager.getProductById(pid);
         if (!product) {
-            return res.status(404).json({ message: `No se encontró el producto: ${productId}` });
+            return res.status(404).json({ message: `No se encontró el producto: ${pid}` });
         }
 
-        const updatedCart = await cartManager.addProductToCart(cartId, productId);
+        const updatedCart = await cartManager.agregarProductoAlCarrito(cid, pid, quantity || 1);
         res.status(201).json(updatedCart);
     } catch (error) {
         res.status(500).json({ error: error.message });

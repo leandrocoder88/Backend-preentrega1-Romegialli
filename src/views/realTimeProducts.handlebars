@@ -1,97 +1,47 @@
-<h1>REAL TIME PRODUCTS</h1>
-
-<div id="contenedorProductos"></div>
-
-<h2>Formulario para Agregar Productos</h2>
-
-<form class="formularioProductos">
-  <div class="form-group">
-    <label for="title">Título:</label>
-    <input
-      type="text"
-      id="title"
-      class="form-control"
-      name="title"
-      placeholder="Título"
-    />
-  </div>
-  <div class="form-group">
-    <label for="description">Descripción:</label>
-    <input
-      type="text"
-      id="description"
-      class="form-control"
-      name="description"
-      placeholder="Descripción"
-    />
-  </div>
-  <div class="form-group">
-    <label for="price">Precio:</label>
-    <input
-      type="number"
-      id="price"
-      class="form-control"
-      name="price"
-      placeholder="Precio"
-    />
-  </div>
-  <div class="form-group">
-    <label for="thumbnails">Imagen:</label>
-    <input
-      type="text"
-      id="thumbnails"
-      class="form-control"
-      name="img"
-      value="Sin Imagen"
-    />
-  </div>
-  <div class="form-group">
-    <label for="code">Código:</label>
-    <input
-      type="text"
-      id="code"
-      class="form-control"
-      name="code"
-      placeholder="Código"
-    />
-  </div>
-  <div class="form-group">
-    <label for="stock">Stock:</label>
-    <input
-      type="number"
-      id="stock"
-      class="form-control"
-      name="stock"
-      placeholder="Stock"
-    />
-  </div>
-  <div class="form-group">
-    <label for="category">Categoría:</label>
-    <input
-      type="text"
-      id="category"
-      class="form-control"
-      name="category"
-      placeholder="Categoría"
-    />
-  </div>
-  <div class="form-group">
-    <label for="status">Estado:</label>
-    <select id="status" class="form-control" name="status">
-      <option value="true">Activo</option>
-      <option value="false">Inactivo</option>
-    </select>
-  </div>
-  <button type="button" id="btnEnviar" class="btn btn-primary">Enviar</button>
-</form>
-
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="/js/main.js"></script>
-
-<script id="product-template" type="text/x-handlebars-template">
-  {{#each products}}
-    <div class="product-item"> <h3>{{title}}</h3> <p>{{description}}</p>
-    <p>Precio: ${{price}}</p> <button class="btn btn-danger delete-button"
-    data-id="{{id}}">Eliminar</button> </div>
-  {{/each}}
-</script>
+{{!-- Usar el diseño principal --}}
+{{!-- Archivo: src/views/realtimeproducts.handlebars --}}
+{{#extends 'layout/main'}}
+{{#content 'body'}}
+    <h1 class="my-4">Productos en tiempo real</h1>
+    <div class="mb-4">
+        <h2>Agregar Producto</h2>
+        <div class="form-group">
+            <label for="title">Título:</label>
+            <input type="text" class="form-control" id="title">
+        </div>
+        <div class="form-group">
+            <label for="description">Descripción:</label>
+            <input type="text" class="form-control" id="description">
+        </div>
+        <div class="form-group">
+            <label for="price">Precio:</label>
+            <input type="number" class="form-control" id="price">
+        </div>
+        <div class="form-group">
+            <label for="thumbnails">Imágenes (URL):</label>
+            <input type="text" class="form-control" id="thumbnails">
+        </div>
+        <div class="form-group">
+            <label for="code">Código:</label>
+            <input type="text" class="form-control" id="code">
+        </div>
+        <div class="form-group">
+            <label for="stock">Stock:</label>
+            <input type="number" class="form-control" id="stock">
+        </div>
+        <div class="form-group">
+            <label for="category">Categoría:</label>
+            <input type="text" class="form-control" id="category">
+        </div>
+        <div class="form-group">
+            <label for="status">Estado:</label>
+            <select class="form-control" id="status">
+                <option value="true">Activo</option>
+                <option value="false">Inactivo</option>
+            </select>
+        </div>
+        <button id="btnEnviar" class="btn btn-primary">Enviar</button>
+    </div>
+    <h2>Listado de Productos</h2>
+    <div class="row" id="contenedorProductos"></div>
+{{/content}}

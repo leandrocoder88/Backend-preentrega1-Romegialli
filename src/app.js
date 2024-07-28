@@ -6,10 +6,28 @@ import path from "path";
 import productsRouter from "./routes/products.router.js";
 import cartRouter from "./routes/carts.router.js";
 import viewsRouter from "./routes/views.router.js";
-import ProductManager from "./managers/product-manager.js";
+import ProductManager from "./dao/fs/product-manager.js";
+import "./database.js";
+import Handlebars from 'handlebars';
 
 const app = express();
 const PUERTO = 8080;
+
+
+
+// Registrar helpers de Handlebars
+
+Handlebars.registerHelper('range', function (start, end) {
+    var result = [];
+    for (var i = start; i <= end; i++) {
+        result.push(i);
+    }
+    return result;
+});
+
+Handlebars.registerHelper('eq', function (a, b) {
+    return a === b;
+});
 
 // Configuración de middlewares
 app.use(express.json());
@@ -17,7 +35,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(process.cwd(), 'src', 'public'))); // Servir archivos estáticos desde src/public
 
 // Configuración del motor de plantillas Handlebars
-app.engine("handlebars", engine());
+app.engine("handlebars", engine({
+    handlebars: Handlebars,
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true,
+    }
+}));
 app.set("views", path.join(process.cwd(), 'src', 'views')); // Rutas relativas
 app.set("view engine", "handlebars");
 
@@ -53,4 +77,3 @@ io.on('connection', async (socket) => {
         }
     });
 });
-

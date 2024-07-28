@@ -1,44 +1,31 @@
-{{#extends "main"}}
-  {{#content "body"}}
-    <h1>Welcome to the Home Page</h1>
-    <div id="contenedorProductos"></div>
-    <form id="productForm">
-      <div class="form-group">
-        <label for="title">Title</label>
-        <input type="text" class="form-control" id="title" required />
-      </div>
-      <div class="form-group">
-        <label for="description">Description</label>
-        <input type="text" class="form-control" id="description" required />
-      </div>
-      <div class="form-group">
-        <label for="price">Price</label>
-        <input type="number" class="form-control" id="price" required />
-      </div>
-      <div class="form-group">
-        <label for="thumbnails">Thumbnails</label>
-        <input type="text" class="form-control" id="thumbnails" />
-      </div>
-      <div class="form-group">
-        <label for="code">Code</label>
-        <input type="text" class="form-control" id="code" required />
-      </div>
-      <div class="form-group">
-        <label for="stock">Stock</label>
-        <input type="number" class="form-control" id="stock" required />
-      </div>
-      <div class="form-group">
-        <label for="category">Category</label>
-        <input type="text" class="form-control" id="category" required />
-      </div>
-      <div class="form-group">
-        <label for="status">Status</label>
-        <select class="form-control" id="status" required>
-          <option value="true">Available</option>
-          <option value="false">Unavailable</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-primary" id="btnEnviar">Add Product</button>
-    </form>
-  {{/content}}
-{{/extends}}
+{{!< layout/main}}
+
+<h1>Lista de Productos</h1>
+{{#each products}}
+  <div>
+    <h2>{{this.name}}</h2>
+    <p>{{this.description}}</p>
+    <p>Precio: ${{this.price}}</p>
+    <button onclick="addToCart('{{this._id}}')">Agregar al Carrito</button>
+    <a href="/products/{{this._id}}">Ver Detalles</a>
+  </div>
+{{/each}}
+<div>
+  {{#if prevLink}}
+    <a href="{{prevLink}}">Anterior</a>
+  {{/if}}
+  Página
+  {{page}}
+  de
+  {{totalPages}}
+  {{#if nextLink}}
+    <a href="{{nextLink}}">Siguiente</a>
+  {{/if}}
+</div>
+<script>
+  function addToCart(productId) { fetch(`/api/carts/{{cartId}}/products`, {
+  method: 'POST', headers: { 'Content-Type': 'application/json' }, body:
+  JSON.stringify({ productId, quantity: 1 }) }) .then(response =>
+  response.json()) .then(data => { alert('Producto agregado al carrito'); })
+  .catch(error => { alert('Error al agregar el producto al carrito'); }); }
+</script>

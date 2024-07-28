@@ -1,66 +1,66 @@
-import { Router } from "express";
-import CartManagerDB from "../dao/db/cart-manager-db.js";
-import ProductManagerDB from "../dao/db/product-manager-db.js";
+import express from 'express';
+import Cart from '../dao/models/cart.model.js';
 
-const router = Router();
-const cartManager = new CartManagerDB();
-const productManager = new ProductManagerDB();
+const router = express.Router();
 
-// Obtener todos los carritos
-router.get("/", async (req, res) => {
-    try {
-        const carts = await cartManager.obtenerCarritos();
-        const { limit } = req.query;
-        if (limit) {
-            res.json(carts.slice(0, limit));
-        } else {
-            res.json(carts);
-        }
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Obtener un carrito por ID
-router.get("/:cid", async (req, res) => {
+router.get('/:cid', async (req, res) => {
     const { cid } = req.params;
     try {
-        const cart = await cartManager.getCarritoById(cid);
-        if (cart) {
-            res.json(cart);
-        } else {
-            res.status(404).send("Carrito no encontrado");
-        }
+        const cart = await Cart.findById(cid).populate('products.productId');
+        res.json({ status: 'success', payload: cart });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ status: 'error', message: error.message });
     }
 });
 
-// Crear un nuevo carrito
-router.post("/", async (req, res) => {
+router.put('/:cid', async (req, res) => {
+    const { cid } = req.params;
+    const { products } = req.body;
     try {
-        const newCart = await cartManager.crearCarrito();
-        res.status(201).json({ message: `Carrito ${newCart._id} creado correctamente`, cart: newCart });
+        const cart = await Cart.findByIdAndUpdate(cid, { $set: { products } }, { new: true });
+        res.json({ status: 'success', message: 'Cart updated', cart });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ status: 'error', message: error.message });
     }
 });
 
-// Añadir un producto a un carrito
-router.post("/:cid/product/:pid", async (req, res) => {
+router.put('/:cid/products/:pid', async (req, res) => {
     const { cid, pid } = req.params;
-    const { quantity } = req.body; // Asumiendo que se puede pasar la cantidad en el cuerpo de la solicitud
-
+    const { quantity } = req.body;
     try {
-        const product = await productManager.getProductById(pid);
-        if (!product) {
-            return res.status(404).json({ message: `No se encontró el producto: ${pid}` });
+        const cart = await Cart.findById(cid);
+        const product = cart.products.find(p => p.productId.toString() === pid);
+        if (product) {
+            product.quantity = quantity;
+            await cart.save();
+            res.json({ status: 'success', message: 'Product quantity updated' });
+        } else {
+            res.status(404).json({ status: 'error', message: 'Product not found' });
         }
-
-        const updatedCart = await cartManager.agregarProductoAlCarrito(cid, pid, quantity || 1);
-        res.status(201).json(updatedCart);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ status: 'error', message: error.message });
+    }
+});
+
+router.delete('/:cid', async (req, res) => {
+    const { cid } = req.params;
+    try {
+        await Cart.findByIdAndUpdate(cid, { $set: { products: [] } });
+        res.json({ status: 'success', message: 'All products removed from cart' });
+    } catch (error) {
+        res.status(500).json({ status: 'error', message: error.message });
+    }
+});
+
+router.delete('/:cid/products/:pid', async (req, res) => {
+    const { cid, pid } = req.params;
+    try {
+        const cart = await Cart.findById(cid);
+        cart.products = cart.products.filter(p => p.productId.toString() !== pid);
+        await cart.save();
+        res.json({ status: 'success', message: 'Product removed from cart' });
+    } catch (error) {
+        res.status(500).json({ status: 'error', message: error.message });
     }
 });
 

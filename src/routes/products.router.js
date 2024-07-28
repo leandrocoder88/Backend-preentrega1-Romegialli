@@ -1,85 +1,52 @@
-import { Router } from "express";
-import ProductManagerDB from "../dao/db/product-manager-db.js";
+import express from 'express';
+import Product from '../dao/models/product.model.js';
 
-const router = Router();
-const productManager = new ProductManagerDB();
+const router = express.Router();
 
-// Obtener todos los productos
-router.get("/", async (req, res) => {
-    const { limit, page, sort, query } = req.query;
-
+router.get('/', async (req, res) => {
     try {
-        const options = {
-            limit: limit ? parseInt(limit) : 10,
-            page: page ? parseInt(page) : 1,
-            sort: sort ? { price: sort === "asc" ? 1 : -1 } : {},
-        };
+        const { limit = 10, page = 1, sort, query, category, available } = req.query;
+        const limitNum = parseInt(limit, 10);
+        const pageNum = parseInt(page, 10);
+        let sortOptions = {};
+        if (sort) {
+            sortOptions.price = sort === 'asc' ? 1 : -1;
+        }
 
-        const filter = query ? { category: query } : {};
+        const filterOptions = {};
+        if (query) {
+            filterOptions.name = { $regex: query, $options: "i" };
+        }
+        if (category) {
+            filterOptions.category = category;
+        }
+        if (available !== undefined) {
+            filterOptions.available = available === 'true';
+        }
 
-        const result = await productManager.getProducts(filter, options);
+        const products = await Product.find(filterOptions)
+            .limit(limitNum)
+            .skip(limitNum * (pageNum - 1))
+            .sort(sortOptions)
+            .exec();
 
-        const { docs, totalPages, page: currentPage, hasPrevPage, hasNextPage, prevPage, nextPage } = result;
+        const totalProducts = await Product.countDocuments(filterOptions);
+        const totalPages = Math.ceil(totalProducts / limitNum);
 
         res.json({
-            status: "success",
-            payload: docs,
+            status: 'success',
+            payload: products,
             totalPages,
-            prevPage,
-            nextPage,
-            page: currentPage,
-            hasPrevPage,
-            hasNextPage,
-            prevLink: hasPrevPage ? `/products?page=${prevPage}&limit=${limit}&sort=${sort}&query=${query}` : null,
-            nextLink: hasNextPage ? `/products?page=${nextPage}&limit=${limit}&sort=${sort}&query=${query}` : null,
+            prevPage: pageNum > 1 ? pageNum - 1 : null,
+            nextPage: pageNum < totalPages ? pageNum + 1 : null,
+            page: pageNum,
+            hasPrevPage: pageNum > 1,
+            hasNextPage: pageNum < totalPages,
+            prevLink: pageNum > 1 ? `/api/products?page=${pageNum - 1}&limit=${limit}` : null,
+            nextLink: pageNum < totalPages ? `/api/products?page=${pageNum + 1}&limit=${limit}` : null
         });
     } catch (error) {
-        res.status(500).json({ status: "error", message: error.message });
-    }
-});
-
-// Obtener un producto por su ID
-router.get("/:pid", async (req, res) => {
-    const { pid } = req.params;
-    try {
-        const product = await productManager.getProductById(pid);
-        res.json(product);
-    } catch (error) {
-        res.status(404).json({ status: "error", message: "Producto no encontrado" });
-    }
-});
-
-// Crear un nuevo producto
-router.post("/", async (req, res) => {
-    const newProduct = req.body;
-    try {
-        const product = await productManager.createProduct(newProduct);
-        res.status(201).json({ status: "success", product });
-    } catch (error) {
-        res.status(400).json({ status: "error", message: error.message });
-    }
-});
-
-// Eliminar un producto por su ID
-router.delete("/:pid", async (req, res) => {
-    const { pid } = req.params;
-    try {
-        await productManager.deleteProduct(pid);
-        res.json({ status: "success", message: `Producto con id ${pid} eliminado con éxito` });
-    } catch (error) {
-        res.status(404).json({ status: "error", message: error.message });
-    }
-});
-
-// Actualizar un producto por su ID
-router.put("/:pid", async (req, res) => {
-    const { pid } = req.params;
-    const updatedProduct = req.body;
-    try {
-        const product = await productManager.updateProduct(pid, updatedProduct);
-        res.json({ status: "success", message: "Producto actualizado con éxito", product });
-    } catch (error) {
-        res.status(404).json({ status: "error", message: error.message });
+        res.status(500).json({ status: 'error', message: error.message });
     }
 });
 

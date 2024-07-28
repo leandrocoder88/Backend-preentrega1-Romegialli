@@ -1,58 +1,49 @@
-import { Router } from "express";
-import ProductManagerDB from "../dao/db/product-manager-db.js";
-import CartManagerDB from "../dao/db/cart-manager-db.js";
+import express from 'express';
+import Product from '../dao/models/product.model.js';
 
-const router = Router();
-const productManager = new ProductManagerDB();
-const cartManager = new CartManagerDB();
+const router = express.Router();
 
-// Vista Home
-router.get("/", async (req, res) => {
-    try {
-        const { page = 1, limit = 10, sort = 'asc' } = req.query;
-        const options = {
-            page: parseInt(page, 10),
-            limit: parseInt(limit, 10),
-            sort: { price: sort === 'asc' ? 1 : -1 }
-        };
-        const productos = await productManager.getProducts({}, options);
-        res.render("home", { productos: productos.docs, ...productos });
-    } catch (error) {
-        console.error("Error al mostrar los productos", error);
-        res.status(500).json({ error: "Error interno del servidor" });
+router.get('/products', async (req, res) => {
+    const { limit = 10, page = 1, sort, query, category, available } = req.query;
+    const limitNum = parseInt(limit, 10);
+    const pageNum = parseInt(page, 10);
+    let sortOptions = {};
+    if (sort) {
+        sortOptions.price = sort === 'asc' ? 1 : -1;
     }
-});
 
-// Vista Real-Time Products
-router.get("/realtimeproducts", (req, res) => {
-    try {
-        res.render("realtimeproducts");
-    } catch (error) {
-        console.error("Error al mostrar los productos", error);
-        res.status(500).json({
-            error: "Error interno del servidor"
-        });
+    const filterOptions = {};
+    if (query) {
+        filterOptions.name = { $regex: query, $options: "i" };
     }
-});
+    if (category) {
+        filterOptions.category = category;
+    }
+    if (available !== undefined) {
+        filterOptions.available = available === 'true';
+    }
 
-// Obtener un carrito por ID y mostrar sus productos
-router.get("/carts/:cid", async (req, res) => {
-    const cartID = req.params.cid;
-    try {
-        const carrito = await cartManager.getCarritoById(cartID);
-        if (!carrito) {
-            console.log("No existe el carrito");
-            return res.status(404).json({ error: "Carrito no encontrado" });
-        }
-        const productosEnCarrito = carrito.products.map(item => ({
-            product: item.product.toObject(),
-            quantity: item.quantity
-        }));
-        res.render("carts", { productos: productosEnCarrito });
-    } catch (error) {
-        console.error("Error al obtener el carrito", error);
-        res.status(500).json({ error: "Error interno del servidor" });
-    }
+    const products = await Product.find(filterOptions)
+        .limit(limitNum)
+        .skip(limitNum * (pageNum - 1))
+        .sort(sortOptions)
+        .exec();
+
+    const totalProducts = await Product.countDocuments(filterOptions);
+    const totalPages = Math.ceil(totalProducts / limitNum);
+
+    res.render('home', {
+        products: products,
+        totalPages,
+        prevPage: pageNum > 1 ? pageNum - 1 : null,
+        nextPage: pageNum < totalPages ? pageNum + 1 : null,
+        page: pageNum,
+        hasPrevPage: pageNum > 1,
+        hasNextPage: pageNum < totalPages,
+        prevLink: pageNum > 1 ? `/products?page=${pageNum - 1}&limit=${limit}` : null,
+        nextLink: pageNum < totalPages ? `/products?page=${pageNum + 1}&limit=${limit}` : null,
+        cartId: req.session ? req.session.cartId : null // Suponiendo que tienes manejo de sesión
+    });
 });
 
 export default router;

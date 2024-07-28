@@ -9,14 +9,16 @@ import viewsRouter from "./routes/views.router.js";
 import ProductManager from "./dao/fs/product-manager.js";
 import "./database.js";
 import Handlebars from 'handlebars';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
-const PUERTO = 8080;
-
-
+const PORT = 8080;
 
 // Registrar helpers de Handlebars
-
 Handlebars.registerHelper('range', function (start, end) {
     var result = [];
     for (var i = start; i <= end; i++) {
@@ -32,7 +34,7 @@ Handlebars.registerHelper('eq', function (a, b) {
 // Configuración de middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(process.cwd(), 'src', 'public'))); // Servir archivos estáticos desde src/public
+app.use(express.static(path.join(__dirname, 'public'))); // Servir archivos estáticos desde src/public
 
 // Configuración del motor de plantillas Handlebars
 app.engine("handlebars", engine({
@@ -42,20 +44,26 @@ app.engine("handlebars", engine({
         allowProtoMethodsByDefault: true,
     }
 }));
-app.set("views", path.join(process.cwd(), 'src', 'views')); // Rutas relativas
+app.set("views", path.join(__dirname, 'views')); // Rutas relativas
 app.set("view engine", "handlebars");
-
-// Servidor HTTP
-const httpServer = app.listen(PUERTO, () => {
-    displayRoutes(app);
-});
 
 // Rutas
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartRouter);
 app.use("/", viewsRouter); // Ruta para las vistas
 
-const productManager = new ProductManager(path.join(process.cwd(), 'src', 'data', 'products.json'));
+const productManager = new ProductManager(path.join(__dirname, 'data', 'products.json'));
+
+// Ruta para manejar la URL raíz
+app.get('/', (req, res) => {
+    res.render('home'); // Renderizar la vista 'home'
+});
+
+// Servidor HTTP
+const httpServer = app.listen(PORT, () => {
+    displayRoutes(app);
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
 
 // Configuración de Socket.IO
 const io = new Server(httpServer);

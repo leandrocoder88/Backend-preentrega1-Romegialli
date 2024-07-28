@@ -1,15 +1,17 @@
 {{!< layout/main}}
 
 <h1>Lista de Productos</h1>
-{{#each products}}
-  <div>
-    <h2>{{this.name}}</h2>
-    <p>{{this.description}}</p>
-    <p>Precio: ${{this.price}}</p>
-    <button onclick="addToCart('{{this._id}}')">Agregar al Carrito</button>
-    <a href="/products/{{this._id}}">Ver Detalles</a>
-  </div>
-{{/each}}
+<div id="contenedorProductos">
+  {{#each products}}
+    <div>
+      <h2>{{this.name}}</h2>
+      <p>{{this.description}}</p>
+      <p>Precio: ${{this.price}}</p>
+      <button onclick="addToCart('{{this._id}}')">Agregar al Carrito</button>
+      <a href="/products/{{this._id}}">Ver Detalles</a>
+    </div>
+  {{/each}}
+</div>
 <div>
   {{#if prevLink}}
     <a href="{{prevLink}}">Anterior</a>
@@ -22,6 +24,7 @@
     <a href="{{nextLink}}">Siguiente</a>
   {{/if}}
 </div>
+<button id="btnEnviar">Enviar</button>
 <script>
   function addToCart(productId) { fetch(`/api/carts/{{cartId}}/products`, {
   method: 'POST', headers: { 'Content-Type': 'application/json' }, body:

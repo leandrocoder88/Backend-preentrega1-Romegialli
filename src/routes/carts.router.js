@@ -3,6 +3,16 @@ import Cart from '../dao/models/cart.model.js';
 
 const router = express.Router();
 
+router.post('/', async (req, res) => {
+    try {
+        const newCart = new Cart();
+        const savedCart = await newCart.save();
+        res.status(201).json(savedCart);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 router.get('/:cid', async (req, res) => {
     const { cid } = req.params;
     try {

@@ -7,13 +7,15 @@ document.addEventListener('DOMContentLoaded', () => {
             contenedorProductos.innerHTML = "";
 
             data.forEach(item => {
+                const thumbnails = Array.isArray(item.thumbnails) ? item.thumbnails.join(", ") : item.thumbnails || 'No disponibles';
+
                 const card = document.createElement("div");
                 card.innerHTML = `
                     <p>ID: ${item._id}</p>
                     <p>Título: ${item.title}</p>
                     <p>Descripción: ${item.description}</p>
                     <p>Precio: ${item.price}</p>
-                    <p>Miniaturas: ${item.thumbnails.join(", ")}</p>
+                    <p>Miniaturas: ${thumbnails}</p>
                     <p>Código: ${item.code}</p>
                     <p>Stock: ${item.stock}</p>
                     <p>Categoría: ${item.category}</p>

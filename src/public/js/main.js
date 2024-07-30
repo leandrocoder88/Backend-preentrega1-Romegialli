@@ -41,38 +41,52 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const agregarProducto = () => {
+        const titleElement = document.getElementById("title");
+        const descriptionElement = document.getElementById("description");
+        const priceElement = document.getElementById("price");
+        const thumbnailsElement = document.getElementById("thumbnails");
+        const codeElement = document.getElementById("code");
+        const stockElement = document.getElementById("stock");
+        const categoryElement = document.getElementById("category");
+        const statusElement = document.getElementById("status");
+
+        if (!titleElement || !descriptionElement || !priceElement || !thumbnailsElement || !codeElement || !stockElement || !categoryElement || !statusElement) {
+            console.error("Uno o más elementos del formulario no fueron encontrados en el DOM.");
+            return;
+        }
+
         const producto = {
-            title: document.getElementById("title").value,
-            description: document.getElementById("description").value,
-            price: parseFloat(document.getElementById("price").value),
-            thumbnails: document.getElementById("thumbnails").value.split(',').map(item => item.trim()),
-            code: document.getElementById("code").value,
-            stock: parseInt(document.getElementById("stock").value),
-            category: document.getElementById("category").value,
-            status: document.getElementById("status").value === "true",
+            title: titleElement.value,
+            description: descriptionElement.value,
+            price: parseFloat(priceElement.value),
+            thumbnails: thumbnailsElement.value.split(',').map(item => item.trim()),
+            code: codeElement.value,
+            stock: parseInt(stockElement.value),
+            category: categoryElement.value,
+            status: statusElement.value === "true",
         };
 
         socket.emit("addProduct", producto);
 
         // Limpiar los campos del formulario después de enviar el producto
-        document.getElementById("title").value = '';
-        document.getElementById("description").value = '';
-        document.getElementById("price").value = '';
-        document.getElementById("thumbnails").value = '';
-        document.getElementById("code").value = '';
-        document.getElementById("stock").value = '';
-        document.getElementById("category").value = '';
-        document.getElementById("status").value = 'true';
+        titleElement.value = '';
+        descriptionElement.value = '';
+        priceElement.value = '';
+        thumbnailsElement.value = '';
+        codeElement.value = '';
+        stockElement.value = '';
+        categoryElement.value = '';
+        statusElement.value = 'true';
     };
 
     socket.on("products", (data) => {
         renderProductos(data);
     });
 
-    const btnEnviar = document.getElementById("btnEnviar");
-    if (btnEnviar) {
-        btnEnviar.addEventListener("click", agregarProducto);
+    const btnAgregarProducto = document.getElementById("btnAgregarProducto");
+    if (btnAgregarProducto) {
+        btnAgregarProducto.addEventListener("click", agregarProducto);
     } else {
-        console.error("btnEnviar no encontrado en el DOM");
+        console.error("btnAgregarProducto no encontrado en el DOM");
     }
 });

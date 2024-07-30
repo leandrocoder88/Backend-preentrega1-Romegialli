@@ -85,5 +85,18 @@
     "stock": "245",
     "category": "Carne de Aves",
     "status": true
+  },
+  {
+    "id": null,
+    "title": "carcaraña",
+    "description": "carne chaja",
+    "price": 12345,
+    "thumbnails": [
+      ""
+    ],
+    "code": "435",
+    "stock": 5643,
+    "category": "carne de aves",
+    "status": true
   }
 ]

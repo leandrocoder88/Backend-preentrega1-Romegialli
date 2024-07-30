@@ -6,7 +6,8 @@ import path from "path";
 import productsRouter from "./routes/products.router.js";
 import cartRouter from "./routes/carts.router.js";
 import viewsRouter from "./routes/views.router.js";
-import ProductManager from "./dao/fs/product-manager.js";
+import ProductManagerDB from "./dao/db/product-manager-db.js";  // Importar ProductManagerDB
+import CartManagerDB from "./dao/db/cart-manager-db.js";  // Importar CartManagerDB
 import "./database.js";
 import Handlebars from 'handlebars';
 import { fileURLToPath } from 'url';
@@ -17,6 +18,9 @@ const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = 8080;
+
+const productManager = new ProductManagerDB();  // Instancia de ProductManagerDB
+const cartManager = new CartManagerDB();  // Instancia de CartManagerDB
 
 // Registrar helpers de Handlebars
 Handlebars.registerHelper('range', function (start, end) {
@@ -34,7 +38,7 @@ Handlebars.registerHelper('eq', function (a, b) {
 // Configuración de middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public'))); // Servir archivos estáticos desde src/public
+app.use(express.static(path.join(__dirname, 'public'))); // Servir archivos estáticos desde public
 
 // Configuración del motor de plantillas Handlebars
 app.engine("handlebars", engine({
@@ -52,9 +56,7 @@ app.use("/api/products", productsRouter);
 app.use("/api/carts", cartRouter);
 app.use("/", viewsRouter); // Ruta para las vistas
 
-const productManager = new ProductManager(path.join(__dirname, 'data', 'products.json'));
-
-// Ruta para manejar la URL raíz
+// Ruta para la URL raíz
 app.get('/', (req, res) => {
     res.render('home'); // Renderizar la vista 'home'
 });
@@ -69,19 +71,30 @@ const httpServer = app.listen(PORT, () => {
 const io = new Server(httpServer);
 
 io.on('connection', async (socket) => {
-    socket.emit('products', await productManager.getAllProducts());
+    try {
+        const products = await productManager.getProducts({});
+        socket.emit('products', products.docs); // Enviar solo el array de productos
+    } catch (error) {
+        console.error('Error al obtener productos:', error.message);
+    }
 
     socket.on('deleteProduct', async (id) => {
-        await productManager.deleteProduct(parseInt(id));
-        io.sockets.emit('products', await productManager.getAllProducts());
+        try {
+            await productManager.deleteProduct(id);
+            const products = await productManager.getProducts({});
+            io.sockets.emit('products', products.docs); // Enviar solo el array de productos
+        } catch (error) {
+            console.error('Error eliminando producto:', error.message);
+        }
     });
 
     socket.on('addProduct', async (product) => {
         try {
-            await productManager.createProduct(product);
-            io.sockets.emit('products', await productManager.getAllProducts());
+            await productManager.addProduct(product);
+            const products = await productManager.getProducts({});
+            io.sockets.emit('products', products.docs); // Enviar solo el array de productos
         } catch (error) {
-            console.error('Error adding product:', error.message);
+            console.error('Error agregando producto:', error.message);
         }
     });
 });

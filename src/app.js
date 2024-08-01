@@ -1,100 +1,184 @@
-import express from "express";
-import displayRoutes from "express-routemap";
-import { engine } from "express-handlebars";
-import { Server } from "socket.io";
-import path from "path";
-import productsRouter from "./routes/products.router.js";
-import cartRouter from "./routes/carts.router.js";
-import viewsRouter from "./routes/views.router.js";
-import ProductManagerDB from "./dao/db/product-manager-db.js";  // Importar ProductManagerDB
-import CartManagerDB from "./dao/db/cart-manager-db.js";  // Importar CartManagerDB
-import "./database.js";
-import Handlebars from 'handlebars';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import express from "express"
+import displayRoutes from "express-routemap"
+import { engine } from "express-handlebars"
+import { Server } from "socket.io"
+import productsRouter from "./routes/products.routes.js"
+import cartRouter from "./routes/cart.routes.js"
+import viewsRouter from "./routes/views.routes.js"
+import productsModel from "./dao/models/products.model.js"
+import CartManager from "./dao/db/cartManagerDb.js"
+import ProductManager from "./dao/db/productManagerDb.js"
+import "./database.js"
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
+const PUERTO = 8080;
 const app = express();
-const PORT = 8080;
+const cartManager = new CartManager();
+const productManager = new ProductManager();
 
-const productManager = new ProductManagerDB();  // Instancia de ProductManagerDB
-const cartManager = new CartManagerDB();  // Instancia de CartManagerDB
-
-// Registrar helpers de Handlebars
-Handlebars.registerHelper('range', function (start, end) {
-    var result = [];
-    for (var i = start; i <= end; i++) {
-        result.push(i);
-    }
-    return result;
-});
-
-Handlebars.registerHelper('eq', function (a, b) {
-    return a === b;
-});
-
-// Configuración de middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public'))); // Servir archivos estáticos desde public
+app.use(express.static("./src/public"));
 
-// Configuración del motor de plantillas Handlebars
-app.engine("handlebars", engine({
-    handlebars: Handlebars,
-    runtimeOptions: {
-        allowProtoPropertiesByDefault: true,
-        allowProtoMethodsByDefault: true,
-    }
-}));
-app.set("views", path.join(__dirname, 'views')); // Rutas relativas
+app.engine("handlebars", engine());
+app.set("views", "./src/views");
 app.set("view engine", "handlebars");
 
-// Rutas
+
+const httpServer = app.listen(PUERTO, () => {
+    displayRoutes(app)
+});
+
+const stats = async () => {
+    const resp = await productsModel.find({ status: true }).explain("executionStats");
+
+    console.log(resp)
+}
+// stats()
+
+
+app.use("/", viewsRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartRouter);
-app.use("/", viewsRouter); // Ruta para las vistas
 
-// Ruta para la URL raíz
-app.get('/', (req, res) => {
-    res.render('home'); // Renderizar la vista 'home'
-});
-
-// Servidor HTTP
-const httpServer = app.listen(PORT, () => {
-    displayRoutes(app);
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
-
-// Configuración de Socket.IO
 const io = new Server(httpServer);
 
-io.on('connection', async (socket) => {
-    try {
-        const products = await productManager.getProducts({});
-        socket.emit('products', products.docs); // Enviar solo el array de productos
-    } catch (error) {
-        console.error('Error al obtener productos:', error.message);
-    }
+io.on("connection", async (socket) => {
 
-    socket.on('deleteProduct', async (id) => {
+    socket.emit("products", await productManager.getProducts({ page: 1, limit: 5 }));
+
+    socket.on('getProducts', async ({ page = 1, limit = 5 } = {}) => {
         try {
-            await productManager.deleteProduct(id);
-            const products = await productManager.getProducts({});
-            io.sockets.emit('products', products.docs); // Enviar solo el array de productos
+            const productsData = await productManager.getProducts({ page, limit });
+            socket.emit('products', productsData);
+
         } catch (error) {
-            console.error('Error eliminando producto:', error.message);
+            console.error('Error fetching products:', error);
+            socket.emit('error', 'Error fetching products');
         }
     });
 
-    socket.on('addProduct', async (product) => {
+    socket.on("deleteProduct", async (id) => {
         try {
-            await productManager.addProduct(product);
-            const products = await productManager.getProducts({});
-            io.sockets.emit('products', products.docs); // Enviar solo el array de productos
+            if (!id) {
+                socket.emit("error", "ID de producto no proporcionado");
+                return;
+            }
+
+            const deletedProduct = await productManager.deleteProduct(id);
+
+            if (!deletedProduct) {
+                socket.emit("error", "Producto no encontrado");
+                return;
+            }
+
+            io.sockets.emit("products", await productManager.getProducts({ page: 1, limit: 5 }));
+
         } catch (error) {
-            console.error('Error agregando producto:', error.message);
+            console.error("Error al eliminar el producto:", error);
+            socket.emit("error", "Error al eliminar el producto");
         }
+    })
+
+    socket.on("addProduct", async (product) => {
+        try {
+            const newProduct = await productManager.addProduct(product);
+
+            io.sockets.emit("products", await productManager.getProducts({ page: 1, limit: 5 }));
+
+        } catch (error) {
+            console.error("Error al agregar el producto:", error);
+            socket.emit("error", "Error al agregar el producto");
+        }
+    })
+
+    socket.emit("carts", await cartManager.getCarts());
+
+    socket.on("deleteCart", async (id) => {
+        try {
+            if (!id) {
+                socket.emit("error", "ID de carrito no proporcionado");
+                return;
+            }
+
+            const deletedCart = await cartManager.deleteCart(id);
+
+            if (!deletedCart) {
+                socket.emit("error", "Carrito no encontrado");
+                return;
+            }
+
+            io.sockets.emit(cartManager.getCarts());
+
+        } catch (error) {
+            console.error("Error al eliminar el carrito:", error);
+            socket.emit("error", "Error al eliminar el carrito");
+        }
+    })
+
+    socket.on("deleteProdCart", async (prodId, id) => {
+
+        try {
+            if (!id) {
+                socket.emit("error", "ID de carrito no proporcionado");
+                return;
+            }
+
+            const deletedProd = await cartManager.removeProdCart(id, prodId);
+
+            if (!deletedProd) {
+                socket.emit("error", "Carrito no encontrado");
+                return;
+            }
+
+            io.sockets.emit(cartManager.getCarts());
+
+        } catch (error) {
+            console.error("Error al eliminar el carrito:", error);
+            socket.emit("error", "Error al eliminar el carrito");
+        }
+
+    })
+
+    socket.on("addProdToCart", async (products) => {
+        try {
+            let cart = await cartManager.createCart();
+
+            if (!cart) {
+                throw new Error('Error al crear o encontrar el carrito');
+            } else {
+                for (const { id, quantity } of products) {
+                    await cartManager.addProdToCart(cart._id, id, quantity);
+                }
+
+                socket.emit('redirect', { url: `/realtimecarts` });
+
+            }
+        }
+
+        catch (error) {
+            console.error('Error generando carrito:', error);
+            socket.emit('error', { message: 'Error agregando productos' });
+        }
+
+    })
+})
+
+async function getCartDataWithProductNames(cartManager) {
+    const carts = await cartManager.getCarts();
+    const productIds = carts.flatMap(cart => cart.products.map(prod => prod.product));
+    const products = await productsModel.find({ _id: { $in: productIds } });
+
+    const productsMap = products.reduce((map, product) => {
+        map[product._id] = product.title;
+        return map;
+    }, {});
+
+    carts.forEach(cart => {
+        cart.products.forEach(prod => {
+            prod.name = productsMap[prod.product] || 'Nombre Desconocido';
+        });
     });
-});
+
+    return carts;
+}

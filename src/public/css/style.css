@@ -1,43 +1,177 @@
-/* Ejemplo de estilo CSS */
 body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
+  background-color: #314768; /* Cambiado a un color más sobrio y elegante */
+  background-image: url('https://tn.com.ar/resizer/v2/cual-es-el-precio-del-pollo-y-que-pasara-en-2024-foto-adobe-stock-2VZE43RNBBHJPDBPWMSRCQHEGA.png?auth=57ede7ef0a10ff923cc391737a68c14a72f8f5c81a8e5bb172b2745a3c5d9ce1&width=1440'); /* URL de la imagen de fondo */
+  background-size: cover; /* Ajusta la imagen para cubrir todo el fondo */
+  background-repeat: no-repeat; /* Evita que la imagen se repita */
+  background-position: center center; /* Centra la imagen */
+  color:#ffffff; /* Color de texto más suave */
+  font-family: 'Arial', sans-serif; /* Fuente profesional */
+  margin: 0;
+  padding: 0;
 }
 
-h1,
-h2 {
-  color: #333;
+a {
+  text-decoration: none;
+  color: goldenrod;
 }
 
-.formularioProductos {
-  max-width: 500px;
-  margin: 0 auto;
+h1, h2, h3 {
+  text-align: center;
+  color: goldenrod; /* Color de encabezados */
 }
 
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-}
-
-.btn-primary {
-  background-color: #007bff;
-  border: none;
-  padding: 10px 20px;
+.btn { 
+  margin: 2rem;
+  padding: 0.5rem 1rem;
+  background-color: #2b2b2b;
   color: #fff;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.btn-primary:hover {
-  background-color: #0056b3;
+.btn:hover {
+  background-color: #4a4a4a;
+}
+
+.btn__carrito {
+  width: 100%;
+}
+
+.botones__home {
+  display: flex;
+  justify-content: space-between;
+}
+
+.list {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  border: solid #2b2b2b 3px;
+  padding: 2rem;
+  gap: 1rem;
+}
+
+.product {
+  padding: 1rem;
+  border-radius: 10px;
+  background-color: #ce9418;
+  font-weight: 600;
+  border: #2b2b2b solid 2px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.mainCont {
+  display: flex;
+  justify-content: space-around;
+  padding: 2rem;
+}
+
+.product__box {
+  width: 70%;
+  font-weight: 600;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.productCont {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  min-width: 40%;
+  margin: 1rem;
+  border-radius: 10px;
+  border: #ce9418 solid 2px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px #ce9418;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.productCont:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.productCont button {
+  width: fit-content;
+  align-self: flex-end;
+}
+
+.form {
+  width: 50vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border: #2b2b2b solid 2px;
+  position: sticky;
+  top: 0;
+  margin-top: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  border-radius: 10px;
+  background-color: #fff;
+}
+
+.form__int {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.productCartCont {
+  display: flex;
+  width: fit-content;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  min-width: 40%;
+  margin: 1rem;
+  border-radius: 10px;
+  background-color: gold;
+  border: goldenrod solid 2px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.productCartCont:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.cart__unit {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.cart__id {
+  font-weight: 600;
+  align-self: center;
+}
+
+.pagination-controls {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+}
+
+.pageInfo {
+  font-weight: bold;
+}
+
+.input {
+  width: 70%;
+  padding: 0.5rem;
+  border: #2b2b2b solid 1px;
+  border-radius: 5px;
 }

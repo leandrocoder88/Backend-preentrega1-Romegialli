@@ -1,47 +1,48 @@
-{{!-- Usar el diseño principal --}}
-{{!-- Archivo: src/views/realtimeproducts.handlebars --}}
-{{#extends 'layout/main'}}
-{{#content 'body'}}
-    <h1 class="my-4">Productos en tiempo real</h1>
-    <div class="mb-4">
-        <h2>Agregar Producto</h2>
-        <div class="form-group">
-            <label for="title">Título:</label>
-            <input type="text" class="form-control" id="title">
-        </div>
-        <div class="form-group">
-            <label for="description">Descripción:</label>
-            <input type="text" class="form-control" id="description">
-        </div>
-        <div class="form-group">
-            <label for="price">Precio:</label>
-            <input type="number" class="form-control" id="price">
-        </div>
-        <div class="form-group">
-            <label for="thumbnails">Imágenes (URL):</label>
-            <input type="text" class="form-control" id="thumbnails">
-        </div>
-        <div class="form-group">
-            <label for="code">Código:</label>
-            <input type="text" class="form-control" id="code">
-        </div>
-        <div class="form-group">
-            <label for="stock">Stock:</label>
-            <input type="number" class="form-control" id="stock">
-        </div>
-        <div class="form-group">
-            <label for="category">Categoría:</label>
-            <input type="text" class="form-control" id="category">
-        </div>
-        <div class="form-group">
-            <label for="status">Estado:</label>
-            <select class="form-control" id="status">
-                <option value="true">Activo</option>
-                <option value="false">Inactivo</option>
-            </select>
-        </div>
-        <button id="btnEnviar" class="btn btn-primary">Enviar</button>
+<div class="container my-5">
+    <h1 class="text-center">Real time Products</h1>
+
+    <div class="d-flex justify-content-between my-4">
+        <a href="/" class="btn btn-primary">Home</a>
     </div>
-    <h2>Listado de Productos</h2>
-    <div class="row" id="contenedorProductos"></div>
-{{/content}}
+
+    <div class="row">
+        <div id="productCont" class="col-md-8"></div>
+
+        <section class="col-md-4">
+            <h2 class="text-center">Agregá desde aqui tus productos!</h2>
+            <form class="form__int">
+                <div class="mb-3">
+                    <input type="text" id="title" class="form-control" placeholder="Nombre">
+                </div>
+                <div class="mb-3">
+                    <input type="text" id="description" class="form-control" placeholder="Descripcion">
+                </div>
+                <div class="mb-3">
+                    <input type="number" id="price" class="form-control" placeholder="Precio">
+                </div>
+                <div class="mb-3">
+                    <input type="text" id="img" class="form-control" value="Sin Imagen">
+                </div>
+                <div class="mb-3">
+                    <input type="text" id="code" class="form-control" placeholder="Codigo">
+                </div>
+                <div class="mb-3">
+                    <input type="number" id="stock" class="form-control" placeholder="Stock">
+                </div>
+                <div class="mb-3">
+                    <input type="text" id="category" class="form-control" placeholder="Categoria">
+                </div>
+                <div class="mb-3">
+                    <select id="status" class="form-select">
+                        <option value="true">Activo</option>
+                        <option value="false">Inactivo</option>
+                    </select>
+                </div>
+                <button type="button" id="btnEnviar" class="btn btn-primary w-100">Enviar</button>
+            </form>
+        </section>
+    </div>
+</div>
+
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+<script src="js/main.js"></script>

@@ -1,88 +1,14 @@
-{{!< layout/main}}
+<div class="container my-5">
+    <h1 class="text-center">🐦🦃Delicias Aladas🦆🦢</h1>
 
-<h1>Lista de Productos</h1>
-<div id="contenedorProductos">
-  {{#each products}}
-    <div>
-      <p>ID: {{this._id}}</p>
-      <p>Título: {{this.name}}</p>
-      <p>Descripción: {{this.description}}</p>
-      <p>Precio: {{this.price}}</p>
-      <p>Miniaturas: {{#if this.thumbnails}}{{this.thumbnails}}{{else}}Sin Imagen{{/if}}</p>
-      <p>Código: {{this.code}}</p>
-      <p>Stock: {{this.stock}}</p>
-      <p>Categoría: {{this.category}}</p>
-      <p>Estado: {{#if this.status}}Disponible{{else}}No disponible{{/if}}</p>
-      <button onclick="addToCart('{{this._id}}')">Agregar al Carrito</button>
-      <a href="/products/{{this._id}}">Ver Detalles</a>
-      <button class="delete-button" data-id="{{this._id}}">Eliminar ❌</button>
+    <div class="d-flex justify-content-between my-4">
+        <a href="/realtimeproducts" class="btn btn-primary">Agregar/editar Productos</a>
+        <a href="/realtimecarts" class="btn btn-primary">mis carritos</a>
     </div>
-  {{/each}}
-</div>
-<div>
-  {{#if prevLink}}
-    <a href="{{prevLink}}">Anterior</a>
-  {{/if}}
-  Página {{page}} de {{totalPages}}
-  {{#if nextLink}}
-    <a href="{{nextLink}}">Siguiente</a>
-  {{/if}}
-</div>
-<button id="btnEnviar">Enviar</button>
 
-<!-- Formulario para agregar un nuevo producto -->
-<form id="formAgregarProducto">
-  <div>
-    <label for="title">Título:</label>
-    <input type="text" id="title" name="title" required>
-  </div>
-  <div>
-    <label for="description">Descripción:</label>
-    <input type="text" id="description" name="description" required>
-  </div>
-  <div>
-    <label for="price">Precio:</label>
-    <input type="number" id="price" name="price" required>
-  </div>
-  <div>
-    <label for="thumbnails">Miniaturas (separadas por comas):</label>
-    <input type="text" id="thumbnails" name="thumbnails">
-  </div>
-  <div>
-    <label for="code">Código:</label>
-    <input type="text" id="code" name="code" required>
-  </div>
-  <div>
-    <label for="stock">Stock:</label>
-    <input type="number" id="stock" name="stock" required>
-  </div>
-  <div>
-    <label for="category">Categoría:</label>
-    <input type="text" id="category" name="category" required>
-  </div>
-  <div>
-    <label for="status">Estado:</label>
-    <select id="status" name="status" required>
-      <option value="true">Disponible</option>
-      <option value="false">No disponible</option>
-    </select>
-  </div>
-  <button type="button" id="btnAgregarProducto">Agregar Producto</button>
-</form>
+    
+    <div id="productList" class="row"></div>
+</div>
 
-<script>
-  function addToCart(productId) { 
-    fetch(`/api/carts/{{cartId}}/products`, {
-      method: 'POST', 
-      headers: { 'Content-Type': 'application/json' }, 
-      body: JSON.stringify({ productId, quantity: 1 })
-    })
-    .then(response => response.json())
-    .then(data => { 
-      alert('Producto agregado al carrito'); 
-    })
-    .catch(error => { 
-      alert('Error al agregar el producto al carrito'); 
-    }); 
-  }
-</script>
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+<script src="js/home.js"></script>
